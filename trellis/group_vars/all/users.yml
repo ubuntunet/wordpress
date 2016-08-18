@@ -16,7 +16,8 @@ users:
       # - "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
       - https://github.com/chrubuntu.keys
 
-web_user: web
+# web_user: web
+web_user: www-data
 web_group: www-data
 web_sudoers:
   - "/usr/sbin/service php7.0-fpm *"
