@@ -39,7 +39,6 @@
     "johnpbloch/wordpress": "4.6",
     "oscarotero/env": "^1.0",
     "roots/wp-password-bcrypt": "1.0.0",
-    // Added manually by chrubuntu
     "wpackagist-plugin/tablepress": "1.7"
   },
   "require-dev": {
