@@ -1,3 +1,60 @@
+version 3.0.4 ( updated 09-12-2016 )
+- Fixed issue with animated images not appearing outside the Visual Builder.
+	* includes/builder/scripts/front-end-builder-scripts.js
+
+version 3.0.3 ( updated 09-12-2016 )
+- Fixed issue with the Fullwidth Code Module that caused the Visual Builder to fail to save. 
+- Fixed an issue with the Portfolio Module that caused the Visual Builder to fail to save for some users.
+- Private pages saved via the Visual Builder will now be saved correctly as private.
+- Fixed various rendering issues with the Audio module when viewed inside the Visual Builder.
+- Disabled modules will now show their current visibility-state while using the responsive preview toggles. 
+- Fixed typo in the Row width unit switcher in the Visual Builder.
+	* includes/builder/front-end-builder/app/bundle.js
+	* includes/builder/front-end-builder/app/style.
+	* includes/builder/class-et-builder-element.php
+
+version 3.0.2 ( updated 09-10-2016 )
+- Fixed issue with (+) overlap when footer menu and footer widgets are not present. 
+- Fixed issues with Post Navigation module rendering inside the Visual Builder.
+- Right click menu now works correctly for specialty sections.
+- In-line Editor will no longer leave the screen view-port when activated at the top or to the sides of the browser.
+- Improved error handling for library items loading.
+	* includes/builder/front-end-builder/app/bundle.js
+	* includes/builder/front-end-builder/app/style.css
+	* includes/builder/front-end-builder/helpers.php
+
+version 3.0.1 ( updated 09-08-2016 )
+- Added footer credits editor to Theme Customizer.
+- Fixed various third party module conflicts in the Visual Builder.
+- Fixed issue with content width misalignment in the Visual Builder while boxed layout was enabled.
+- Fixed occurrences where the in-line editor did not save properly
+- The save button will now appear automatically when attempting to leave the Visual Builder without saving. 
+- Fixed issues with IE11 and the Slider Module when viewed inside the Visual Builder.
+- Fixed problem with the rendering of the divider module height setting in the Visual Builder.
+	* includes/builder/front-end-builder/app/bundle.js
+	* includes/builder/front-end-builder/app/style.css
+	* includes/builder/front-end-builder/helpers.php
+	* includes/builder/front-end-builder/init.php
+	* includes/builder/front-end-builder/core.php
+	* includes/builder/front-end-builder/main-modules.php
+	* includes/builder/front-end-builder/main-structure-element.php
+	* includes/builder/front-end-builder/et-builder-class-element.php
+	* footer.php
+	* functions.php
+	* js/theme-customizer-controls.js
+	* js/theme-customizer.js
+	* includes/functions/sanitization.php
+	* css/theme-customizer-controls-styles.css
+
+version 3.0 ( updated 09-07-2016 )
+- Introducing the brand new Visual Builder: https://www.elegantthemes.com/blog/theme-releases/divi-3
+	* includes/builder/*
+	* single-et_pb_layout.php
+
+version 2.7.10 ( updated 08-18-2016 )
+- Fixed the issue with the Divi Builder not loading on some websites due to loading delay of TinyMCE in the latest version of WordPress.
+	* includes/builder/scripts/builder.js
+
 version 2.7.9 ( updated 08-15-2016 )
 - Fixed settings page font issues in WordPress 4.6
 	* core/admin/css/core.css

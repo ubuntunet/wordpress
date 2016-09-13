@@ -35,11 +35,9 @@ if ( ! is_page_template( 'page-template-blank.php' ) ) : ?>
 					if ( false !== et_get_option( 'show_footer_social_icons', true ) ) {
 						get_template_part( 'includes/social_icons', 'footer' );
 					}
-				?>
 
-						<p id="footer-info">
-							Copyright (C) 2016  UbuntuNet Alliance
-						</p>
+					echo et_get_footer_credits();
+				?>
 					</div>	<!-- .container -->
 				</div>
 			</footer> <!-- #main-footer -->
