@@ -1,6 +1,20 @@
 ubuntunet.net Wordpress deployment using Trellis and Bedrock
 ============================================================
 
+Server Setup
+------------
+
+See also: https://roots.io/trellis/docs/remote-server-setup/
+
+Only do this when starting afresh or when there has been some changes to the underlying software and/or OS
+
+```
+ansible-playbook server.yml -e env=<environment>
+```
+
+Provisioning
+------------
+
 The following directories need to belong to the user ubuntu for the provisioning to work correctly:
 
 ```
@@ -8,6 +22,28 @@ The following directories need to belong to the user ubuntu for the provisioning
 /srv/www/<sitename>/releases
 /srv/www/<sitename>/shared/source
 ```
+
+Run the command
+
+```
+./deploy.sh staging wordpress.ubuntunet.net
+```
+
+(Re)Install free plugins (ToDo - Integrated into the Playbook)
+
+```
+cd /srv/www/wordpress.ubuntunet.net
+composer update
+```
+
+Copy over the commercial plugins from ElegantThemes
+
+```
+cd /srv/www/wordpress.ubuntunet.net
+cp -pr releases/<last_releasedate>/web/app/plugins/monarch current/web/app/plugins/
+cp -pr releases/<last_releasedate>/web/app/plugins/bloom current/web/app/plugins/
+sudo service nginx restart
+``
 
 Ansible Vault
 -------------
