@@ -1,6 +1,0 @@
-# Documentation: https://roots.io/trellis/docs/mail/
-mail_smtp_server: smtp.gmail.com:587
-mail_admin: devops@ubuntunet.net
-mail_hostname: ubuntunet.net
-mail_user: rr@ubuntunet.net
-mail_password: "{{ vault_mail_password }}" # Define this variable in group_vars/all/vault.yml
