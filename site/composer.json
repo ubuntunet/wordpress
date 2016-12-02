@@ -42,7 +42,8 @@
     "wpackagist-plugin/tablepress": "1.7",
     "wpackagist-plugin/document-gallery": "4.2.4",
     "wpackagist-plugin/quick-pagepost-redirect-plugin": "5.1.8",
-    "wpackagist-plugin/wp-category-tag-could": "1.7.1"  },
+    "wpackagist-plugin/wp-category-tag-could": "1.7.1"
+  },
   "require-dev": {
     "squizlabs/php_codesniffer": "^2.5.1"
   },
