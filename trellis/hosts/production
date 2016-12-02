@@ -2,7 +2,7 @@
 # List each machine only once per [group], even if it will host multiple sites.
 
 [production]
-your_server_hostname
+168.253.216.236 ansible_user=ubuntu
 
 [web]
-your_server_hostname
+168.253.216.236

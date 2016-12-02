@@ -9,6 +9,7 @@ See also: https://roots.io/trellis/docs/remote-server-setup/
 Only do this when starting afresh or when there has been some changes to the underlying software and/or OS
 
 ```
+ansible-galaxy install -r requirements.yml
 ansible-playbook server.yml -e env=<environment>
 ```
 
@@ -44,6 +45,16 @@ cp -pr releases/<last_releasedate>/web/app/plugins/monarch current/web/app/plugi
 cp -pr releases/<last_releasedate>/web/app/plugins/bloom current/web/app/plugins/
 sudo service nginx restart
 ``
+
+
+Upgrade with Subtree
+--------------------
+
+```
+git subtree pull --prefix=trellis trellis master --squash
+git subtree pull --prefix=site bedrock master --squash
+```
+
 
 Ansible Vault
 -------------
