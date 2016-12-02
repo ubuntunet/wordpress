@@ -1,0 +1,10 @@
+# Add each host to the [production] group and to a "type" group such as [web] or [db].
+# List each machine only once per [group], even if it will host multiple sites.
+
+wingu ansible_host=168.253.217.8 ansible_user=ubuntu
+
+[production]
+wingu
+
+[web]
+wingu
