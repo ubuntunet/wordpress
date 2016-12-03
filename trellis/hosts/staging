@@ -1,10 +1,8 @@
 # Add each host to the [staging] group and to a "type" group such as [web] or [db].
 # List each machine only once per [group], even if it will host multiple sites.
 
-wingu ansible_host=168.253.216.236 ansible_user=ubuntu
-
 [staging]
-wingu
+168.253.216.236 ansible_user=ubuntu
 
 [web]
-wingu
+168.253.216.236
