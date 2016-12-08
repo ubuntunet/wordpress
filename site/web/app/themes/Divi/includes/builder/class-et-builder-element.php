@@ -32,8 +32,12 @@ class ET_Builder_Element {
 	private $_style_priority;
 
 	private static $styles = array();
+	private static $internal_modules_styles = array();
+	private static $prepare_internal_styles = false;
+	private static $internal_modules_counter = 10000;
 	private static $media_queries = array();
 	private static $modules_order;
+	private static $inner_modules_order;
 	private static $parent_modules = array();
 	private static $child_modules = array();
 	private static $ab_tests_processed = array();
@@ -71,6 +75,7 @@ class ET_Builder_Element {
 		}
 
 		$this->init();
+		$this->make_options_filterable();
 
 		$this->process_whitelisted_fields();
 		$this->set_fields();
@@ -354,7 +359,7 @@ class ET_Builder_Element {
 		$post_id = apply_filters( 'et_is_ab_testing_active_post_id', get_the_ID() );
 
 		// If the section/row/module is disabled, hide it
-		if ( isset( $this->shortcode_atts['disabled'] ) && 'on' === $this->shortcode_atts['disabled'] && ! et_fb_enabled() ) {
+		if ( isset( $this->shortcode_atts['disabled'] ) && 'on' === $this->shortcode_atts['disabled'] && ! $et_fb_processing_shortcode_object ) {
 			return;
 		}
 
@@ -385,8 +390,8 @@ class ET_Builder_Element {
 			}
 		}
 
-		//override module attributes for global module
-		if ( ! empty( $this->shortcode_atts['global_module'] ) ) {
+		//override module attributes for global module. Skip that step while processing Frontend Builder object
+		if ( ! empty( $this->shortcode_atts['global_module'] ) && ! $et_fb_processing_shortcode_object ) {
 			$global_content = et_pb_load_global_module( $this->shortcode_atts['global_module'] );
 
 			if ( '' !== $global_content ) {
@@ -560,7 +565,16 @@ class ET_Builder_Element {
 					$global_content_processed = $global_content;
 				}
 
-				$global_atts = shortcode_parse_atts( $global_content_processed );
+				// Ensuring that all possible attributes exist to avoid remaining child attributes being used by global parents' attributes
+				// Do that only in case the module is fully global
+				if ( ! isset( $atts['saved_tabs'] ) || 'all' === $atts['saved_tabs'] ) {
+					$global_atts = wp_parse_args(
+						shortcode_parse_atts( $global_content_processed ),
+						array_map( '__return_empty_string', $this->whitelisted_fields )
+					);
+				} else {
+					$global_atts = shortcode_parse_atts( $global_content_processed );
+				}
 
 				foreach( $this->shortcode_atts as $single_attr => $value ) {
 					if ( isset( $global_atts[$single_attr] ) ) {
@@ -655,6 +669,7 @@ class ET_Builder_Element {
 			$et_fb_processing_shortcode_object = false;
 			$raw_child_content = $content;
 			$content = $this->_shortcode_callback( $atts, $content, $function_name_processed );
+			$executed_shortcode = do_shortcode( $content );
 			$processed_content = false !== $global_shortcode_content ? $global_shortcode_content : $this->shortcode_content;
 			$attrs['content_new'] = array_key_exists( 'content_new', $this->whitelisted_fields ) ? $processed_content : et_fb_process_shortcode( $processed_content, $address, $global_parent, $global_parent_type );
 			$et_fb_processing_shortcode_object = true;
@@ -669,7 +684,7 @@ class ET_Builder_Element {
 			if ( $this->fb_support && count( preg_split('/\r\n*\n/', trim( $content ), -1, PREG_SPLIT_NO_EMPTY ) ) > 1 ) {
 				$prepared_content = wpautop( $content );
 			} else {
-				$prepared_content = html_entity_decode($content);
+				$prepared_content = html_entity_decode($content, ENT_COMPAT, 'UTF-8');
 			}
 		}
 
@@ -841,6 +856,11 @@ class ET_Builder_Element {
 					'tab_slug'        => 'advanced',
 					'toggle_slug'     => '',
 				) );
+
+				// set the depends_show_if parameter if needed
+				if ( isset( $option_settings['depends_show_if'] ) ) {
+					$additional_options["{$option_name}_font"]['depends_show_if'] = $option_settings['depends_show_if'];
+				}
 			}
 
 			if ( ! isset( $option_settings['hide_font_size'] ) || ! $option_settings['hide_font_size'] ) {
@@ -858,6 +878,11 @@ class ET_Builder_Element {
 					),
 				) );
 
+				// set the depends_show_if parameter if needed
+				if ( isset( $option_settings['depends_show_if'] ) ) {
+					$additional_options["{$option_name}_font_size"]['depends_show_if'] = $option_settings['depends_show_if'];
+				}
+
 				$additional_options["{$option_name}_font_size_tablet"] = array(
 					'type'     => 'skip',
 					'tab_slug' => 'advanced',
@@ -867,7 +892,7 @@ class ET_Builder_Element {
 					'tab_slug' => 'advanced',
 				);
 
-				if ( et_fb_is_enabled() ) {
+				if ( et_fb_is_enabled() || et_fb_is_retrieving_builder_data() ) {
 					$additional_options["{$option_name}_font_size_last_edited"] = array(
 						'type'     => 'skip',
 						'tab_slug' => 'advanced',
@@ -891,6 +916,11 @@ class ET_Builder_Element {
 					'custom_color'    => true,
 					'tab_slug'        => 'advanced',
 				);
+
+				// set the depends_show_if parameter if needed
+				if ( isset( $option_settings['depends_show_if'] ) ) {
+					$additional_options["{$option_name}_text_color"]['depends_show_if'] = $option_settings['depends_show_if'];
+				}
 			}
 
 			if ( ! isset( $option_settings['hide_letter_spacing'] ) || ! $option_settings['hide_letter_spacing'] ) {
@@ -908,6 +938,11 @@ class ET_Builder_Element {
 					),
 				) );
 
+				// set the depends_show_if parameter if needed
+				if ( isset( $option_settings['depends_show_if'] ) ) {
+					$additional_options["{$option_name}_letter_spacing"]['depends_show_if'] = $option_settings['depends_show_if'];
+				}
+
 				$additional_options["{$option_name}_letter_spacing_tablet"] = array(
 					'type'     => 'skip',
 					'tab_slug' => 'advanced',
@@ -917,7 +952,7 @@ class ET_Builder_Element {
 					'tab_slug' => 'advanced',
 				);
 
-				if ( et_fb_is_enabled() ) {
+				if ( et_fb_is_enabled() || et_fb_is_retrieving_builder_data() ) {
 					$additional_options["{$option_name}_letter_spacing_last_edited"] = array(
 						'type'     => 'skip',
 						'tab_slug' => 'advanced',
@@ -948,6 +983,11 @@ class ET_Builder_Element {
 					$additional_options["{$option_name}_line_height"] = $default_option_line_height;
 				}
 
+				// set the depends_show_if parameter if needed
+				if ( isset( $option_settings['depends_show_if'] ) ) {
+					$additional_options["{$option_name}_line_height"]['depends_show_if'] = $option_settings['depends_show_if'];
+				}
+
 				$additional_options["{$option_name}_line_height_tablet"] = array(
 					'type'     => 'skip',
 					'tab_slug' => 'advanced',
@@ -957,7 +997,7 @@ class ET_Builder_Element {
 					'tab_slug' => 'advanced',
 				);
 
-				if ( et_fb_is_enabled() ) {
+				if ( et_fb_is_enabled() || et_fb_is_retrieving_builder_data() ) {
 					$additional_options["{$option_name}_line_height_last_edited"] = array(
 						'type'     => 'skip',
 						'tab_slug' => 'advanced',
@@ -977,6 +1017,11 @@ class ET_Builder_Element {
 					'shortcode_default' => $option_settings['defaults']['all_caps'],
 					'tab_slug' => 'advanced',
 				);
+
+				// set the depends_show_if parameter if needed
+				if ( isset( $option_settings['depends_show_if'] ) ) {
+					$additional_options["{$option_name}_all_caps"]['depends_show_if'] = $option_settings['depends_show_if'];
+				}
 			}
 		}
 
@@ -1116,7 +1161,7 @@ class ET_Builder_Element {
 				$additional_options['custom_margin'] = array_merge( $additional_options['custom_margin'], $this->advanced_options['custom_margin_padding']['custom_margin'] );
 			}
 
-			if ( et_fb_is_enabled() ) {
+			if ( et_fb_is_enabled() || et_fb_is_retrieving_builder_data() ) {
 				$additional_options["custom_margin_last_edited"] = array(
 					'type'     => 'skip',
 					'tab_slug' => 'advanced',
@@ -1166,7 +1211,7 @@ class ET_Builder_Element {
 				$additional_options['custom_padding'] = array_merge( $additional_options['custom_padding'], $this->advanced_options['custom_margin_padding']['custom_padding'] );
 			}
 
-			if ( et_fb_is_enabled() ) {
+			if ( et_fb_is_enabled() || et_fb_is_retrieving_builder_data() ) {
 				$additional_options["custom_padding_last_edited"] = array(
 					'type'     => 'skip',
 					'tab_slug' => 'advanced',
@@ -1449,6 +1494,21 @@ class ET_Builder_Element {
 				'type'     => 'skip',
 				'tab_slug' => 'advanced',
 			);
+
+			if ( et_fb_is_enabled() || et_fb_is_retrieving_builder_data() ) {
+				$additional_options["{$option_name}_text_size_last_edited"] = array(
+					'type'     => 'skip',
+					'tab_slug' => 'advanced',
+				);
+				$additional_options["{$option_name}_letter_spacing_last_edited"] = array(
+					'type'     => 'skip',
+					'tab_slug' => 'advanced',
+				);
+				$additional_options["{$option_name}_letter_spacing_hover_last_edited"] = array(
+					'type'     => 'skip',
+					'tab_slug' => 'advanced',
+				);
+			}
 		}
 
 		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_options );
@@ -1492,12 +1552,14 @@ class ET_Builder_Element {
 		$additional_option_slugs = array( 'description', 'priority' );
 
 		foreach ( $custom_css_options as $slug => $option ) {
-			$selector_output = isset( $option['selector'] ) ? str_replace( '%%order_class%%', $current_module_unique_class, $option['selector'] ) : '';
+			$selector_value = isset( $option['selector'] ) ? $option['selector'] : '';
+			$selector_contains_module_class = false !== strpos( $selector_value, '%%order_class%%' ) ? true : false;
+			$selector_output = '' !== $selector_value ? str_replace( '%%order_class%%', $current_module_unique_class, $option['selector'] ) : '';
 			$custom_css_fields[ "custom_css_{$slug}" ] = array(
 				'label'    => sprintf(
 					'%1$s:<span>%2$s%3$s%4$s</span>',
 					$option['label'],
-					$main_css_element_output,
+					! $selector_contains_module_class ? $main_css_element_output : '',
 					! isset( $option['no_space_before_selector'] ) && isset( $option['selector'] ) ? ' ' : '',
 					$selector_output
 				),
@@ -1625,7 +1687,7 @@ class ET_Builder_Element {
 		}
 
 		$output = sprintf(
-			'%6$s<div class="et-pb-option%1$s%2$s%3$s%8$s%9$s"%4$s tabindex="-1">%5$s</div> <!-- .et-pb-option -->%7$s',
+			'%6$s<div class="et-pb-option et-pb-option--%10$s%1$s%2$s%3$s%8$s%9$s"%4$s tabindex="-1">%5$s</div> <!-- .et-pb-option -->%7$s',
 			( ! empty( $field['type'] ) && 'tiny_mce' == $field['type'] ? ' et-pb-option-main-content' : '' ),
 			( ( $depends || isset( $field['depends_default'] ) ) ? ' et-pb-depends' : '' ),
 			( ! empty( $field['type'] ) && 'hidden' == $field['type'] ? ' et_pb_hidden' : '' ),
@@ -1634,7 +1696,8 @@ class ET_Builder_Element {
 			"\t",
 			"\n\n\t\t",
 			( ! empty( $field['type'] ) && 'hidden' == $field['type'] ? esc_attr( sprintf( ' et-pb-option-%1$s', $field['name'] ) ) : '' ),
-			( ! empty( $field['option_class'] ) ? ' ' . $field['option_class'] : '' )
+			( ! empty( $field['option_class'] ) ? ' ' . $field['option_class'] : '' ),
+			isset( $field['type'] ) ? esc_attr( $field['type'] ) : ''
 		);
 
 		return $output;
@@ -1661,7 +1724,7 @@ class ET_Builder_Element {
 			$output = $field_el;
 		} else {
 			$output = sprintf(
-				'%3$s<div class="et-pb-option-container%5$s">
+				'%3$s<div class="et-pb-option-container et-pb-option-container--%6$s%5$s">
 					%1$s
 					%2$s
 				%4$s</div> <!-- .et-pb-option-container -->',
@@ -1669,7 +1732,8 @@ class ET_Builder_Element {
 				$description,
 				"\n\n\t\t\t\t",
 				"\t",
-				( isset( $field['type'] ) && 'custom_css' === $field['type'] ? ' et-pb-custom-css-option' : '' )
+				( isset( $field['type'] ) && 'custom_css' === $field['type'] ? ' et-pb-custom-css-option' : '' ),
+				isset( $field['type'] ) ? esc_attr( $field['type'] ) : ''
 			);
 		}
 
@@ -1812,6 +1876,14 @@ class ET_Builder_Element {
 		}
 
 		switch( $field['type'] ) {
+			case 'warning':
+				$field_el = sprintf(
+					'<div class="et-pb-option-warning" data-name="%2$s" data-display_if="%3$s">%1$s</div>',
+					html_entity_decode( esc_html( $field['message'] ) ),
+					esc_attr( $field['name'] ),
+					esc_attr( $field['display_if'] )
+				);
+				break;
 			case 'tiny_mce':
 				if ( ! empty( $field['tiny_mce_html_mode'] ) ) {
 					$field['class'] .= ' html_mode';
@@ -2603,6 +2675,7 @@ class ET_Builder_Element {
 		$fields['locked'] = '';
 		$fields['template_type'] = '';
 		$fields['inline_fonts'] = '';
+		$fields['collapsed'] = '';
 
 		return $fields;
 	}
@@ -2808,6 +2881,18 @@ class ET_Builder_Element {
 					esc_html( et_builder_process_range_value( $font_options[ $letter_spacing_option_name ] ) ),
 					esc_html( $important )
 				);
+
+				if ( isset( $option_settings['css']['letter_spacing'] ) ) {
+					self::set_style( $function_name, array(
+						'selector'    => $option_settings['css']['letter_spacing'],
+						'declaration' => sprintf(
+							'letter-spacing: %1$s%2$s;',
+							esc_html( et_builder_process_range_value( $font_options[ $letter_spacing_option_name ], 'letter_spacing' ) ),
+							esc_html( $important )
+						),
+						'priority'    => $this->_style_priority,
+					) );
+				}
 			}
 
 			$line_height_option_name = "{$option_name}_{$slugs[4]}";
@@ -2846,6 +2931,11 @@ class ET_Builder_Element {
 
 			if ( '' !== $style ) {
 				$css_element = ! empty( $option_settings['css']['main'] ) ? $option_settings['css']['main'] : $this->main_css_element;
+
+				// use different selector for plugin if defined
+				if ( et_is_builder_plugin_active() && ! empty( $option_settings['css']['plugin_main'] ) ) {
+					$css_element = $option_settings['css']['plugin_main'];
+				}
 
 				// $css_element might be an array, for example to apply the css for placeholders
 				if ( is_array( $css_element ) ) {
@@ -3011,10 +3101,18 @@ class ET_Builder_Element {
 		$settings = $this->advanced_options['border'];
 
 		$use_border_color = $this->shortcode_atts['use_border_color'];
-		$border_style     = $this->shortcode_atts['border_style'];
+		$border_style     = isset( $this->shortcode_atts['border_style'] ) && '' !== $this->shortcode_atts['border_style'] ? $this->shortcode_atts['border_style'] : 'solid';
 		$border_color     =	'' !== $this->shortcode_atts['border_color'] ? $this->shortcode_atts['border_color'] : $this->fields_unprocessed['border_color']['default'];
 		$border_width     = '' !== $this->shortcode_atts['border_width'] ? $this->shortcode_atts['border_width'] : $this->fields_unprocessed['border_width']['default'];
-		$important        = isset( $settings['css']['important'] ) ? '!important' : '';
+		$important        = '';
+
+		if ( isset( $settings['css']['important'] ) ) {
+			if ( 'plugin_only' === $settings['css']['important'] ) {
+				$important = et_is_builder_plugin_active() ? '!important' : '';
+			} else {
+				$important = '!important';
+			}
+		}
 
 		if ( 'on' === $use_border_color ) {
 			$border_declaration_html = sprintf(
@@ -3181,6 +3279,8 @@ class ET_Builder_Element {
 			$button_letter_spacing_hover_tablet = $this->shortcode_atts["{$option_name}_letter_spacing_hover_tablet"];
 			$button_letter_spacing_hover_phone  = $this->shortcode_atts["{$option_name}_letter_spacing_hover_phone"];
 
+			$button_icon_pseudo_selector = $button_icon_placement === 'left' ? ':before' : ':after';
+
 			if ( 'on' === $button_custom ) {
 				$button_text_size = '' === $button_text_size || 'px' === $button_text_size ? '20px' : $button_text_size;
 				$button_text_size = '' !== $button_text_size && false === strpos( $button_text_size, 'px' ) ? $button_text_size . 'px' : $button_text_size;
@@ -3234,7 +3334,7 @@ class ET_Builder_Element {
 					'' !== $button_bg_color_hover ? sprintf( 'background:%1$s !important;', $button_bg_color_hover ) : '',
 					'' !== $button_border_color_hover ? sprintf( 'border-color:%1$s !important;', $button_border_color_hover ) : '',
 					'' !== $button_border_radius_hover ? sprintf( 'border-radius:%1$s;', et_builder_process_range_value( $button_border_radius_hover ) ) : '',
-					'' !== $button_letter_spacing_hover ? sprintf( 'letter-spacing:%1$spx;', $button_letter_spacing_hover ) : '',
+					'' !== $button_letter_spacing_hover ? sprintf( 'letter-spacing:%1$s;', $button_letter_spacing_hover ) : '',
 					'off' === $button_on_hover ?
 						''
 						:
@@ -3252,6 +3352,8 @@ class ET_Builder_Element {
 				if ( 'off' === $button_use_icon ) {
 					$main_element_styles_after = 'display:none !important;';
 					$no_icon_styles = 'padding: 0.3em 1em !important;';
+
+					$selector = sprintf( '%1$s:before, %1$s:after', $css_element_processed );
 
 					self::set_style( $function_name, array(
 						'selector'    => $css_element . ',' . $css_element . ':hover',
@@ -3277,22 +3379,36 @@ class ET_Builder_Element {
 							sprintf( 'line-height:%1$s;', '35' !== $button_icon_code ? '1.7em' : '1em' )
 							: '',
 						'' !== $button_icon_code ? sprintf( 'font-size:%1$s !important;', $button_icon_size ) : '',
-						sprintf( 'opacity:%1$s;', 'on' === $button_on_hover ? '0' : '1' ),
+						sprintf( 'opacity:%1$s;', 'off' !== $button_on_hover ? '0' : '1' ),
 						'off' !== $button_on_hover && '' !== $button_icon_code ?
-							sprintf( 'margin-left:%1$s;left:%2$s;',
-								'left' === $button_icon_placement ? '0' : '-1em',
-								'left' === $button_icon_placement ? '1em' : 'auto'
+							sprintf( 'margin-left: %1$s; %2$s: auto;',
+								'left' === $button_icon_placement ? '-1.3em' : '-1em',
+								'left' === $button_icon_placement ? 'right' : 'left'
 							)
 							: '',
 						'off' === $button_on_hover ?
-							sprintf( 'margin-left:%1$s;left:%2$s;',
-								'left' === $button_icon_placement ? '0' : '.3em',
-								'left' === $button_icon_placement ? '0.15em' : 'auto'
+							sprintf( 'margin-left: %1$s; %2$s:auto;',
+								'left' === $button_icon_placement ? '-1.3em' : '.3em',
+								'left' === $button_icon_placement ? 'right' : 'left'
 							)
 							: '',
-						'on' === $button_use_icon ? 'display: inline-block;' : ''
-
+						( in_array( $button_use_icon , array( 'default', 'on' ) ) ? 'display: inline-block;' : '' )
 					);
+
+					// Reverse icon position
+					if ( 'left' === $button_icon_placement ) {
+						$button_icon_left_content = '' !== $button_icon_code ? 'content: attr(data-icon);' : '';
+
+						self::set_style( $function_name, array(
+							'selector'    => $css_element_processed . ':after',
+							'declaration' => 'display: none;',
+						) );
+
+						self::set_style( $function_name, array(
+							'selector'    => $css_element_processed . ':before',
+							'declaration' => $button_icon_left_content . ' ; font-family: "ETmodules" !important;',
+						) );
+					}
 
 					$hover_after_styles = sprintf(
 						'%1$s
@@ -3302,16 +3418,16 @@ class ET_Builder_Element {
 							sprintf( 'margin-left:%1$s;', '35' !== $button_icon_code ? '.3em' : '0' )
 							: '',
 							'' !== $button_icon_code ?
-								sprintf( 'left:%1$s;margin-left:%2$s;',
-									'left' === $button_icon_placement ? '0.15em' : 'auto',
-									'35' !== $button_icon_code ? '.3em' : '0'
+								sprintf( '%1$s: auto; margin-left: %2$s;',
+									'left' === $button_icon_placement ? 'right' : 'left',
+									'left' === $button_icon_placement ? '-1.3em' : '.3em'
 								)
 							: '',
-						'on' === $button_on_hover ? 'opacity: 1;' : ''
+						'off' !== $button_on_hover ? 'opacity: 1;' : ''
 					);
 
 					self::set_style( $function_name, array(
-						'selector'    => $css_element_processed . ':hover:after',
+						'selector'    => $css_element_processed . ':hover' . $button_icon_pseudo_selector,
 						'declaration' => rtrim( $hover_after_styles ),
 					) );
 
@@ -3320,15 +3436,17 @@ class ET_Builder_Element {
 						$custom_icon_size = $button_text_size;
 
 						self::set_style( $function_name, array(
-							'selector'    => $css_element_processed . ':after',
+							'selector'    => $css_element_processed . $button_icon_pseudo_selector,
 							'declaration' => sprintf( 'font-size:%1$s;', $default_icons_size ),
 						) );
 
 						self::set_style( $function_name, array(
-							'selector'    => 'body.et_button_custom_icon #page-container ' . $css_element . ':after',
+							'selector'    => 'body.et_button_custom_icon #page-container ' . $css_element . $button_icon_pseudo_selector,
 							'declaration' => sprintf( 'font-size:%1$s;', $custom_icon_size ),
 						) );
 					}
+
+					$selector = $css_element_processed . $button_icon_pseudo_selector;
 				}
 
 				foreach( array( 'tablet', 'phone' ) as $device ) {
@@ -3339,7 +3457,7 @@ class ET_Builder_Element {
 
 					if ( ( '' !== $current_text_size && '0px' !== $current_text_size ) || '' !== $current_letter_spacing ) {
 						self::set_style( $function_name, array(
-							'selector'    => $css_element_processed . ',' . $css_element_processed . ':after',
+							'selector'    => $css_element_processed . ',' . $css_element_processed . $button_icon_pseudo_selector,
 							'declaration' => sprintf(
 								'%1$s
 								%2$s',
@@ -3363,7 +3481,7 @@ class ET_Builder_Element {
 				}
 
 				self::set_style( $function_name, array(
-					'selector'    => $css_element_processed . ':after',
+					'selector'    => $selector,
 					'declaration' => rtrim( $main_element_styles_after ),
 				) );
 			}
@@ -3394,6 +3512,27 @@ class ET_Builder_Element {
 				) );
 			}
 		}
+	}
+
+	function make_options_filterable() {
+		if ( isset( $this->advanced_options ) ) {
+			$this->advanced_options = apply_filters(
+				"{$this->slug}_advanced_options",
+				$this->advanced_options,
+				$this->slug,
+				$this->main_css_element
+			);
+		}
+
+		if ( isset( $this->custom_css_options ) ) {
+			$this->custom_css_options = apply_filters(
+				"{$this->slug}_custom_css_options",
+				$this->custom_css_options,
+				$this->slug,
+				$this->main_css_element
+			);
+		}
+
 	}
 
 	static function compare_by_priority( $a, $b ) {
@@ -3535,6 +3674,21 @@ class ET_Builder_Element {
 		}
 
 		return $modules;
+	}
+
+	static function get_fb_unsupported_modules() {
+		$parent_modules = self::get_parent_modules();
+		$unsupported_modules_array = array();
+
+		foreach( $parent_modules as $post_type => $post_type_modules ) {
+			foreach ( $post_type_modules as $module_slug => $module ) {
+				if ( ! isset( $module->fb_support ) || ! $module->fb_support ) {
+					$unsupported_modules_array[] = $module_slug;
+				}
+			}
+		}
+
+		return array_unique( $unsupported_modules_array );
 	}
 
 	static function get_parent_shortcodes( $post_type ) {
@@ -3781,6 +3935,11 @@ class ET_Builder_Element {
 			$dependables = array();
 
 			foreach ( $_module->fields_unprocessed as $field_key => $field ) {
+				// do not add the fields with 'skip' type. These fields used for rendering shortcode on Front End only
+				if ( isset( $field['type'] ) && 'skip' === $field['type'] ) {
+					continue;
+				}
+
 				if ( isset( $field['affects'] ) ) {
 					$dependables[ $field_key ] = $field['affects'];
 				}
@@ -3973,14 +4132,17 @@ class ET_Builder_Element {
 		return self::$media_queries[ $name ];
 	}
 
-	static function get_style() {
-		if ( empty( self::$styles ) ) {
+	static function get_style( $internal = false ) {
+		// use appropriate array depending on which styles we need
+		$styles_array = $internal ? self::$internal_modules_styles : self::$styles;
+
+		if ( empty( $styles_array ) ) {
 			return false;
 		}
 
 		$output = '';
 
-		$styles_by_media_queries = self::$styles;
+		$styles_by_media_queries = $styles_array;
 		$styles_count            = (int) count( $styles_by_media_queries );
 		$media_queries_order     = array_merge( array( 'general' ), array_values( self::$media_queries ) );
 
@@ -4027,17 +4189,36 @@ class ET_Builder_Element {
 		return $output;
 	}
 
-	static function set_style( $function_name, $style ) {
-		$order_class_name = self::get_module_order_class( $function_name );
+	static function clean_internal_modules_styles( $need_internal_styles = true ) {
+		// clean the styles array
+		self::$internal_modules_styles = array();
+		// set the flag to make sure new styles will be saved to the correct place
+		self::$prepare_internal_styles = $need_internal_styles;
+		// generate unique number to make sure module classes will be unique if shortcode is generated via ajax
+		self::$internal_modules_counter = rand( 10000, 99999 );
+	}
 
-		// Prepend .et_divi_builder class before all CSS rules in the Divi Builder plugin
-		if ( et_is_builder_plugin_active() ) {
-			$order_class_name = "et_divi_builder #et_builder_outer_content .$order_class_name";
+	static function set_style( $function_name, $style ) {
+		global $et_pb_rendering_column_content;
+
+		// do not process all the styles if FB enabled. Only those for modules without fb support and styles for the internal modules from Blog/Slider
+		if ( et_fb_is_enabled() && ! in_array( $function_name, self::get_fb_unsupported_modules() ) && ! $et_pb_rendering_column_content ) {
+			return;
 		}
+
+		$order_class_name = self::get_module_order_class( $function_name );
 
 		$selector    = str_replace( '%%order_class%%', ".{$order_class_name}", $style['selector'] );
 		$selector    = str_replace( '%order_class%', ".{$order_class_name}", $selector );
 		$selector    = apply_filters( 'et_pb_set_style_selector', $selector, $function_name );
+
+		// Prepend .et_divi_builder class before all CSS rules in the Divi Builder plugin
+		if ( et_is_builder_plugin_active() ) {
+			$selector = ".et_divi_builder #et_builder_outer_content $selector";
+
+			// add the prefix for all the selectors in a string.
+			$selector = str_replace( ',', ',.et_divi_builder #et_builder_outer_content ', $selector );
+		}
 
 		$declaration = $style['declaration'];
 		// New lines are saved as || in CSS Custom settings, remove them
@@ -4045,27 +4226,55 @@ class ET_Builder_Element {
 
 		$media_query = isset( $style[ 'media_query' ] ) ? $style[ 'media_query' ] : 'general';
 
-		if ( isset( self::$styles[ $media_query ][ $selector ]['declaration'] ) ) {
-			self::$styles[ $media_query ][ $selector ]['declaration'] = sprintf(
-				'%1$s %2$s',
-				self::$styles[ $media_query ][ $selector ]['declaration'],
-				$declaration
-			);
-		} else {
-			self::$styles[ $media_query ][ $selector ]['declaration'] = $declaration;
-		}
+		// prepare styles for internal content. Used in Blog/Slider modules if they contain Divi modules
+		if ( $et_pb_rendering_column_content && self::$prepare_internal_styles ) {
+			if ( isset( self::$internal_modules_styles[ $media_query ][ $selector ]['declaration'] ) ) {
+				self::$internal_modules_styles[ $media_query ][ $selector ]['declaration'] = sprintf(
+					'%1$s %2$s',
+					self::$internal_modules_styles[ $media_query ][ $selector ]['declaration'],
+					$declaration
+				);
+			} else {
+				self::$internal_modules_styles[ $media_query ][ $selector ]['declaration'] = $declaration;
+			}
 
-		if ( isset( $style['priority'] ) ) {
-			self::$styles[ $media_query ][ $selector ]['priority'] = (int) $style['priority'];
+			if ( isset( $style['priority'] ) ) {
+				self::$internal_modules_styles[ $media_query ][ $selector ]['priority'] = (int) $style['priority'];
+			}
+		} else {
+			if ( isset( self::$styles[ $media_query ][ $selector ]['declaration'] ) ) {
+				self::$styles[ $media_query ][ $selector ]['declaration'] = sprintf(
+					'%1$s %2$s',
+					self::$styles[ $media_query ][ $selector ]['declaration'],
+					$declaration
+				);
+			} else {
+				self::$styles[ $media_query ][ $selector ]['declaration'] = $declaration;
+			}
+
+			if ( isset( $style['priority'] ) ) {
+				self::$styles[ $media_query ][ $selector ]['priority'] = (int) $style['priority'];
+			}
 		}
 	}
 
 	static function get_module_order_class( $function_name ) {
-		if ( ! isset( self::$modules_order[ $function_name ] ) ) {
-			return false;
+		global $et_pb_rendering_column_content;
+
+		// determine whether we need to get the internal module class or regular
+		$get_inner_module_class = $et_pb_rendering_column_content;
+
+		if ( $get_inner_module_class ) {
+			if ( ! isset( self::$inner_modules_order[ $function_name ] ) ) {
+				return false;
+			}
+		} else {
+			if ( ! isset( self::$modules_order[ $function_name ] ) ) {
+				return false;
+			}
 		}
 
-		$shortcode_order_num = self::$modules_order[ $function_name ];
+		$shortcode_order_num = $get_inner_module_class ? self::$inner_modules_order[ $function_name ] : self::$modules_order[ $function_name ];
 
 		$order_class_name = sprintf( '%1$s_%2$s', $function_name, $shortcode_order_num );
 
@@ -4073,11 +4282,24 @@ class ET_Builder_Element {
 	}
 
 	static function set_order_class( $function_name ) {
-		if ( ! isset( self::$modules_order ) ) {
-			self::$modules_order = array();
-		}
+		global $et_pb_rendering_column_content;
 
-		self::$modules_order[ $function_name ] = isset( self::$modules_order[ $function_name ] ) ? (int) self::$modules_order[ $function_name ] + 1 : 0;
+		// determine whether we need to update the internal module class or regular
+		$process_inner_module_class = $et_pb_rendering_column_content;
+
+		if ( $process_inner_module_class ) {
+			if ( ! isset( self::$inner_modules_order ) ) {
+				self::$inner_modules_order = array();
+			}
+
+			self::$inner_modules_order[ $function_name ] = isset( self::$inner_modules_order[ $function_name ] ) ? (int) self::$inner_modules_order[ $function_name ] + 1 : self::$internal_modules_counter;
+		} else {
+			if ( ! isset( self::$modules_order ) ) {
+				self::$modules_order = array();
+			}
+
+			self::$modules_order[ $function_name ] = isset( self::$modules_order[ $function_name ] ) ? (int) self::$modules_order[ $function_name ] + 1 : 0;
+		}
 	}
 
 	static function add_module_order_class( $module_class, $function_name ) {

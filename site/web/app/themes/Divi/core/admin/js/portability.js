@@ -240,7 +240,7 @@
 					nonce: $this.nonce,
 					post: postId,
 					context: 'et_builder',
-					page,
+					page: page,
 				},
 				success: function( response ) {
 					var errorEvent = document.createEvent( 'Event' );
