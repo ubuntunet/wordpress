@@ -2,7 +2,7 @@ var ET_PageBuilder = ET_PageBuilder || {};
 
 window.wp = window.wp || {};
 
-window.et_builder_version = '3.0.21';
+window.et_builder_version = '3.0.23';
 
 ( function($) {
 	var et_error_modal_shown = window.et_error_modal_shown,
@@ -12302,11 +12302,7 @@ window.et_builder_version = '3.0.21';
 		 * Check whether the Yoast SEO plugin is active
 		 */
 		function et_pb_is_yoast_seo_active() {
-			if ( typeof YoastSEO !== 'undefined' && typeof YoastSEO === 'object' ) {
-				return true;
-			}
-
-			return false;
+			return ( 'object' === typeof YoastSEO && YoastSEO.hasOwnProperty( 'app' ) )
 		}
 
 		/**

@@ -2257,12 +2257,14 @@ class ET_Builder_Module_Tabs extends ET_Builder_Module {
 					'css'      => array(
 						'main' => "{$this->main_css_element} .et_pb_tabs_controls li",
 						'color' => "{$this->main_css_element} .et_pb_tabs_controls li a",
+						'plugin_main' => "{$this->main_css_element} .et_pb_tabs_controls li, {$this->main_css_element} .et_pb_tabs_controls li a",
 					),
 				),
 				'body'   => array(
 					'label'    => esc_html__( 'Body', 'et_builder' ),
 					'css'      => array(
 						'main' => "{$this->main_css_element} .et_pb_all_tabs .et_pb_tab",
+						'plugin_main' => "{$this->main_css_element} .et_pb_all_tabs .et_pb_tab, {$this->main_css_element} .et_pb_all_tabs .et_pb_tab p",
 						'line_height' => "{$this->main_css_element} .et_pb_tab p",
 					),
 				),
@@ -2292,7 +2294,7 @@ class ET_Builder_Module_Tabs extends ET_Builder_Module {
 			),
 			'tabs_content' => array(
 				'label'    => esc_html__( 'Tabs Content', 'et_builder' ),
-				'selector' => '.et_pb_all_tabs',
+				'selector' => '.et_pb_tab',
 			),
 		);
 	}
@@ -2438,6 +2440,7 @@ class ET_Builder_Module_Tabs_Item extends ET_Builder_Module {
 					'css'      => array(
 						'main'      => ".et_pb_tabs .et_pb_tabs_controls li{$this->main_css_element}",
 						'color'     => ".et_pb_tabs .et_pb_tabs_controls li{$this->main_css_element} a",
+						'plugin_main' => ".et_pb_tabs .et_pb_tabs_controls li{$this->main_css_element}, .et_pb_tabs .et_pb_tabs_controls li{$this->main_css_element} a",
 						'important' => 'all',
 					),
 					'line_height' => array(
@@ -2451,8 +2454,9 @@ class ET_Builder_Module_Tabs_Item extends ET_Builder_Module {
 				'body'   => array(
 					'label'    => esc_html__( 'Body', 'et_builder' ),
 					'css'      => array(
-						'main' => "{$this->main_css_element}.et_pb_tab",
-						'line_height' => "{$this->main_css_element}.et_pb_tab p",
+						'main' => ".et_pb_tabs .et_pb_all_tabs {$this->main_css_element}.et_pb_tab",
+						'line_height' => ".et_pb_tabs {$this->main_css_element}.et_pb_tab p",
+						'plugin_main' => ".et_pb_tabs .et_pb_all_tabs {$this->main_css_element}.et_pb_tab, .et_pb_tabs .et_pb_all_tabs {$this->main_css_element}.et_pb_tab p",
 					),
 					'line_height' => array(
 						'range_settings' => array(
@@ -2465,13 +2469,19 @@ class ET_Builder_Module_Tabs_Item extends ET_Builder_Module {
 			),
 			'background' => array(
 				'css' => array(
-					'main' => "div{$this->main_css_element}",
-					'important' => 'all',
+					'main' => ".et_pb_tabs {$this->main_css_element}.et_pb_tab",
 				),
 				'settings' => array(
 					'color' => 'alpha',
 				),
 			),
+		);
+
+		$this->custom_css_options = array(
+			'main_element' => array(
+				'label'    => esc_html__( 'Main Element', 'et_builder' ),
+				'selector' => ".et_pb_tabs div{$this->main_css_element}.et_pb_tab",
+			)
 		);
 	}
 
@@ -3599,12 +3609,14 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 				%8$s
 				%12$s
 				<div class="et_pb_container clearfix">
-					%5$s
-					<div class="et_pb_slide_description">
-						%1$s
-						<div class="et_pb_slide_content%9$s">%2$s</div>
-						%3$s
-					</div> <!-- .et_pb_slide_description -->
+					<div class="et_pb_slider_container_inner">
+						%5$s
+						<div class="et_pb_slide_description">
+							%1$s
+							<div class="et_pb_slide_content%9$s">%2$s</div>
+							%3$s
+						</div> <!-- .et_pb_slide_description -->
+					</div>
 				</div> <!-- .et_pb_container -->
 				%7$s
 			</div> <!-- .et_pb_slide -->
@@ -4598,6 +4610,7 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module {
 				$query->the_post();
 
 				$slide_class = 'off' !== $show_image && in_array( $image_placement, array( 'left', 'right' ) ) && has_post_thumbnail() ? ' et_pb_slide_with_image' : '';
+				$slide_class .= 'off' !== $show_image && ! has_post_thumbnail() ? ' et_pb_slide_with_no_image' : '';
 				$slide_class .= " et_pb_bg_layout_{$background_layout}";
 			?>
 			<div class="et_pb_slide et_pb_media_alignment_center<?php echo esc_attr( $slide_class ); ?>" <?php if ( 'on' !== $parallax && 'off' !== $show_image && 'background' === $image_placement ) { printf( 'style="background-image:url(%1$s)"', esc_url( wp_get_attachment_url( get_post_thumbnail_id() ) ) );  } ?><?php echo $data_dot_nav_custom_color; echo $data_arrows_custom_color; ?>>
@@ -4608,49 +4621,51 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module {
 					<div class="et_pb_slide_overlay_container"></div>
 				<?php } ?>
 				<div class="et_pb_container clearfix">
-					<?php if ( 'off' !== $show_image && has_post_thumbnail() && ! in_array( $image_placement, array( 'background', 'bottom' ) ) ) { ?>
-						<div class="et_pb_slide_image">
-							<?php the_post_thumbnail(); ?>
-						</div>
-					<?php } ?>
-					<div class="et_pb_slide_description">
-						<h2 class="et_pb_slide_title"><?php the_title(); ?></h2>
-						<div class="et_pb_slide_content <?php if ( 'on' === $hide_content_on_mobile ) { echo esc_attr( $hide_on_mobile_class ); } ?>">
-							<?php
-							if ( 'off' !== $show_meta ) {
-								printf(
-									'<p class="post-meta">%1$s | %2$s | %3$s | %4$s</p>',
-									et_get_safe_localization( sprintf( __( 'by %s', 'et_builder' ), '<span class="author vcard">' .  et_pb_get_the_author_posts_link() . '</span>' ) ),
-									et_get_safe_localization( sprintf( __( '%s', 'et_builder' ), '<span class="published">' . esc_html( get_the_date() ) . '</span>' ) ),
-									get_the_category_list(', '),
-									sprintf( esc_html( _nx( '1 Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) )
-								);
-							}
+					<div class="et_pb_slider_container_inner">
+						<?php if ( 'off' !== $show_image && has_post_thumbnail() && ! in_array( $image_placement, array( 'background', 'bottom' ) ) ) { ?>
+							<div class="et_pb_slide_image">
+								<?php the_post_thumbnail(); ?>
+							</div>
+						<?php } ?>
+						<div class="et_pb_slide_description">
+							<h2 class="et_pb_slide_title"><?php the_title(); ?></h2>
+							<div class="et_pb_slide_content <?php if ( 'on' === $hide_content_on_mobile ) { echo esc_attr( $hide_on_mobile_class ); } ?>">
+								<?php
+								if ( 'off' !== $show_meta ) {
+									printf(
+										'<p class="post-meta">%1$s | %2$s | %3$s | %4$s</p>',
+										et_get_safe_localization( sprintf( __( 'by %s', 'et_builder' ), '<span class="author vcard">' .  et_pb_get_the_author_posts_link() . '</span>' ) ),
+										et_get_safe_localization( sprintf( __( '%s', 'et_builder' ), '<span class="published">' . esc_html( get_the_date() ) . '</span>' ) ),
+										get_the_category_list(', '),
+										sprintf( esc_html( _nx( '1 Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) )
+									);
+								}
+								?>
+								<?php
+									echo $query->posts[ $post_index ]->post_content;
+								?>
+							</div>
+							<?php if ( 'off' !== $show_more_button && '' !== $more_text ) {
+									printf(
+										'<a href="%1$s" class="et_pb_more_button et_pb_button%4$s%5$s"%3$s>%2$s</a>',
+										esc_url( get_permalink() ),
+										esc_html( $more_text ),
+										'' !== $custom_icon && 'on' === $button_custom ? sprintf(
+											' data-icon="%1$s"',
+											esc_attr( et_pb_process_font_icon( $custom_icon ) )
+										) : '',
+										'' !== $custom_icon && 'on' === $button_custom ? ' et_pb_custom_button_icon' : '',
+										'on' === $hide_cta_on_mobile ? esc_attr( " {$hide_on_mobile_class}" ) : ''
+									);
+								}
 							?>
-							<?php
-								echo $query->posts[ $post_index ]->post_content;
-							?>
-						</div>
-						<?php if ( 'off' !== $show_more_button && '' !== $more_text ) {
-								printf(
-									'<a href="%1$s" class="et_pb_more_button et_pb_button%4$s%5$s"%3$s>%2$s</a>',
-									esc_url( get_permalink() ),
-									esc_html( $more_text ),
-									'' !== $custom_icon && 'on' === $button_custom ? sprintf(
-										' data-icon="%1$s"',
-										esc_attr( et_pb_process_font_icon( $custom_icon ) )
-									) : '',
-									'' !== $custom_icon && 'on' === $button_custom ? ' et_pb_custom_button_icon' : '',
-									'on' === $hide_cta_on_mobile ? esc_attr( " {$hide_on_mobile_class}" ) : ''
-								);
-							}
-						?>
-					</div> <!-- .et_pb_slide_description -->
-					<?php if ( 'off' !== $show_image && has_post_thumbnail() && 'bottom' === $image_placement ) { ?>
-						<div class="et_pb_slide_image">
-							<?php the_post_thumbnail(); ?>
-						</div>
-					<?php } ?>
+						</div> <!-- .et_pb_slide_description -->
+						<?php if ( 'off' !== $show_image && has_post_thumbnail() && 'bottom' === $image_placement ) { ?>
+							<div class="et_pb_slide_image">
+								<?php the_post_thumbnail(); ?>
+							</div>
+						<?php } ?>
+					</div>
 				</div> <!-- .et_pb_container -->
 			</div> <!-- .et_pb_slide -->
 		<?php
@@ -7440,7 +7455,7 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 			? ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']
 			: '';
 
-		if ( is_user_logged_in() ) {
+		if ( is_user_logged_in() && ! is_customize_preview() && ! is_et_pb_preview() ) {
 			$current_user = wp_get_current_user();
 
 			$content .= sprintf( '<br/>%1$s <a href="%2$s">%3$s</a>',
@@ -7454,7 +7469,7 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 
 		$form = '';
 
-		if ( !is_user_logged_in() ) {
+		if ( ! is_user_logged_in() || is_customize_preview() || is_et_pb_preview() ) {
 			$username = esc_html__( 'Username', 'et_builder' );
 			$password = esc_html__( 'Password', 'et_builder' );
 
@@ -7497,7 +7512,7 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 		}
 
 		$output = sprintf(
-			'<div%6$s class="et_pb_newsletter et_pb_login clearfix%4$s%7$s"%5$s>
+			'<div%6$s class="et_pb_newsletter et_pb_login clearfix%4$s%7$s%8$s"%5$s>
 				<div class="et_pb_newsletter_description">
 					%1$s
 					%2$s
@@ -7513,7 +7528,8 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 				: ''
 			),
 			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),
-			( '' !== $module_class ? sprintf( ' %1$s', esc_attr( $module_class ) ) : '' )
+			( '' !== $module_class ? sprintf( ' %1$s', esc_attr( $module_class ) ) : '' ),
+			is_customize_preview() || is_et_pb_preview() ? ' et_pb_in_customizer' : ''
 		);
 
 		return $output;
@@ -7748,6 +7764,10 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module {
 	 * @return array portfolio item data
 	 */
 	static function get_portfolio_item( $args = array(), $conditional_tags = array(), $current_page = array() ) {
+		global $et_fb_processing_shortcode_object;
+
+		$global_processing_original_value = $et_fb_processing_shortcode_object;
+
 		$defaults = array(
 			'posts_number'       => 10,
 			'include_categories' => 0,
@@ -7825,8 +7845,13 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module {
 					}
 				}
 
+				// need to disable processnig to make sure get_thumbnail() doesn't generate errors
+				$et_fb_processing_shortcode_object = false;
+
 				// Get thumbnail
 				$thumbnail = get_thumbnail( $width, $height, $classtext, $titletext, $titletext, false, 'Blogimage' );
+
+				$et_fb_processing_shortcode_object = $global_processing_original_value;
 
 				// Append value to query post
 				$query->posts[ $post_index ]->post_permalink 	= get_permalink();
@@ -8315,6 +8340,10 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module {
 	}
 
 	static function get_portfolio_item( $args = array(), $conditional_tags = array(), $current_page = array() ) {
+		global $et_fb_processing_shortcode_object;
+
+		$global_processing_original_value = $et_fb_processing_shortcode_object;
+
 		$defaults = array(
 			'show_pagination'    => 'on',
 			'posts_number'       => '10',
@@ -8389,8 +8418,13 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module {
 					}
 				}
 
+				// need to disable processnig to make sure get_thumbnail() doesn't generate errors
+				$et_fb_processing_shortcode_object = false;
+
 				// Get thumbnail
 				$thumbnail = get_thumbnail( $width, $height, $classtext, $titletext, $titletext, false, 'Blogimage' );
+
+				$et_fb_processing_shortcode_object = $global_processing_original_value;
 
 				// Append value to query post
 				$query->posts[ $post_index ]->post_permalink 	= get_permalink();
@@ -14914,7 +14948,7 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 			),
 			'submit_button' => array(
 				'label'    => esc_html__( 'Submit Button', 'et_builder' ),
-				'selector' => '.form-submit input#submit',
+				'selector' => '.form-submit .et_pb_button#et_pb_submit',
 			),
 		);
 	}
@@ -15025,6 +15059,16 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 		return dirname(__FILE__) . '/comments_template.php';
 	}
 
+	function et_pb_comments_submit_button( $submit_button ) {
+		return sprintf(
+			'<button name="%1$s" type="submit" id="%2$s" class="%3$s">%4$s</button>',
+			esc_attr( 'submit' ),
+			esc_attr( 'et_pb_submit' ),
+			esc_attr( 'submit' ),
+			esc_html( 'Submit Comment', 'et_builder' )
+		);
+	}
+
 	function et_pb_modify_comments_request( $params ) {
 		// modify the request parameters the way it doesn't change the result just to make request with unique parameters
 		$params->query_vars['type__not_in'] = 'et_pb_comments_random_type_' . $this->et_pb_unique_comments_module_class;
@@ -15078,6 +15122,9 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 
 		// include custom comments_template to display the comment section with Divi style
 		add_filter( 'comments_template', array( $this, 'et_pb_comments_template' ) );
+
+		// Modify submit button to be advanced button style ready
+		add_filter( 'comment_form_submit_button', array( $this, 'et_pb_comments_submit_button' ) );
 
 		$comments_content = self::get_comments();
 
@@ -15523,7 +15570,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 			'text_orientation'    => array( 'left' ),
 			'header_fullscreen'   => array( 'off' ),
 			'header_scroll_down'  => array( 'off' ),
-			'scroll_down_icon'    => array( '%%3%%', 'add_default_setting' ),
+			'scroll_down_icon'    => array( ';', 'add_default_setting' ),
 			'parallax'            => array( 'off' ),
 			'parallax_method'     => array( 'off' ),
 			'content_orientation' => array( 'center' ),
@@ -19667,6 +19714,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module {
 				$query->the_post();
 
 				$slide_class = 'off' !== $show_image && in_array( $image_placement, array( 'left', 'right' ) ) && has_post_thumbnail() ? ' et_pb_slide_with_image' : '';
+				$slide_class .= 'off' !== $show_image && ! has_post_thumbnail() ? ' et_pb_slide_with_no_image' : '';
 				$slide_class .= " et_pb_bg_layout_{$background_layout}";
 			?>
 			<div class="et_pb_slide et_pb_media_alignment_center<?php echo esc_attr( $slide_class ); ?>" <?php if ( 'on' !== $parallax && 'off' !== $show_image && 'background' === $image_placement ) { printf( 'style="background-image:url(%1$s)"', esc_url( wp_get_attachment_url( get_post_thumbnail_id() ) ) );  } ?><?php echo $data_dot_nav_custom_color; echo $data_arrows_custom_color; ?>>
@@ -19677,49 +19725,51 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module {
 					<div class="et_pb_slide_overlay_container"></div>
 				<?php } ?>
 				<div class="et_pb_container clearfix">
-					<?php if ( 'off' !== $show_image && has_post_thumbnail() && ! in_array( $image_placement, array( 'background', 'bottom' ) ) ) { ?>
-						<div class="et_pb_slide_image">
-							<?php the_post_thumbnail(); ?>
-						</div>
-					<?php } ?>
-					<div class="et_pb_slide_description">
-						<h2 class="et_pb_slide_title"><a href="<?php esc_url( the_permalink() ); ?>"><?php the_title(); ?></a></h2>
-						<div class="et_pb_slide_content <?php if ( 'on' === $hide_content_on_mobile ) { echo esc_attr( $hide_on_mobile_class ); } ?>">
-							<?php
-							if ( 'off' !== $show_meta ) {
-								printf(
-									'<p class="post-meta">%1$s | %2$s | %3$s | %4$s</p>',
-									et_get_safe_localization( sprintf( __( 'by %s', 'et_builder' ), '<span class="author vcard">' .  et_pb_get_the_author_posts_link() . '</span>' ) ),
-									et_get_safe_localization( sprintf( __( '%s', 'et_builder' ), '<span class="published">' . esc_html( get_the_date() ) . '</span>' ) ),
-									get_the_category_list(', '),
-									sprintf( esc_html( _nx( '1 Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) )
-								);
-							}
+					<div class="et_pb_slider_container_inner">
+						<?php if ( 'off' !== $show_image && has_post_thumbnail() && ! in_array( $image_placement, array( 'background', 'bottom' ) ) ) { ?>
+							<div class="et_pb_slide_image">
+								<?php the_post_thumbnail(); ?>
+							</div>
+						<?php } ?>
+						<div class="et_pb_slide_description">
+							<h2 class="et_pb_slide_title"><a href="<?php esc_url( the_permalink() ); ?>"><?php the_title(); ?></a></h2>
+							<div class="et_pb_slide_content <?php if ( 'on' === $hide_content_on_mobile ) { echo esc_attr( $hide_on_mobile_class ); } ?>">
+								<?php
+								if ( 'off' !== $show_meta ) {
+									printf(
+										'<p class="post-meta">%1$s | %2$s | %3$s | %4$s</p>',
+										et_get_safe_localization( sprintf( __( 'by %s', 'et_builder' ), '<span class="author vcard">' .  et_pb_get_the_author_posts_link() . '</span>' ) ),
+										et_get_safe_localization( sprintf( __( '%s', 'et_builder' ), '<span class="published">' . esc_html( get_the_date() ) . '</span>' ) ),
+										get_the_category_list(', '),
+										sprintf( esc_html( _nx( '1 Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) )
+									);
+								}
+								?>
+								<?php
+									echo $query->posts[ $post_index ]->post_content;
+								?>
+							</div>
+							<?php if ( 'off' !== $show_more_button && '' !== $more_text ) {
+									printf(
+										'<a href="%1$s" class="et_pb_more_button et_pb_button%4$s%5$s"%3$s>%2$s</a>',
+										esc_url( get_permalink() ),
+										esc_html( $more_text ),
+										'' !== $custom_icon && 'on' === $button_custom ? sprintf(
+											' data-icon="%1$s"',
+											esc_attr( et_pb_process_font_icon( $custom_icon ) )
+										) : '',
+										'' !== $custom_icon && 'on' === $button_custom ? ' et_pb_custom_button_icon' : '',
+										'on' === $hide_cta_on_mobile ? esc_attr( " {$hide_on_mobile_class}" ) : ''
+									);
+								}
 							?>
-							<?php
-								echo $query->posts[ $post_index ]->post_content;
-							?>
-						</div>
-						<?php if ( 'off' !== $show_more_button && '' !== $more_text ) {
-								printf(
-									'<a href="%1$s" class="et_pb_more_button et_pb_button%4$s%5$s"%3$s>%2$s</a>',
-									esc_url( get_permalink() ),
-									esc_html( $more_text ),
-									'' !== $custom_icon && 'on' === $button_custom ? sprintf(
-										' data-icon="%1$s"',
-										esc_attr( et_pb_process_font_icon( $custom_icon ) )
-									) : '',
-									'' !== $custom_icon && 'on' === $button_custom ? ' et_pb_custom_button_icon' : '',
-									'on' === $hide_cta_on_mobile ? esc_attr( " {$hide_on_mobile_class}" ) : ''
-								);
-							}
-						?>
-					</div> <!-- .et_pb_slide_description -->
-					<?php if ( 'off' !== $show_image && has_post_thumbnail() && 'bottom' === $image_placement ) { ?>
-						<div class="et_pb_slide_image">
-							<?php the_post_thumbnail(); ?>
-						</div>
-					<?php } ?>
+						</div> <!-- .et_pb_slide_description -->
+						<?php if ( 'off' !== $show_image && has_post_thumbnail() && 'bottom' === $image_placement ) { ?>
+							<div class="et_pb_slide_image">
+								<?php the_post_thumbnail(); ?>
+							</div>
+						<?php } ?>
+					</div>
 				</div> <!-- .et_pb_container -->
 			</div> <!-- .et_pb_slide -->
 		<?php

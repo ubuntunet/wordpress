@@ -358,9 +358,9 @@ class ET_Global_Settings {
 		);
 
 		if ( ! et_is_builder_plugin_active() ) {
-			$defaults['et_pb_gallery-zoom_icon_color']              = et_get_option( 'accent_color', '#2EA3F2' );
-			$defaults['et_pb_portfolio-zoom_icon_color']            = et_get_option( 'accent_color', '#2EA3F2' );
-			$defaults['et_pb_filterable_portfolio-zoom_icon_color'] = et_get_option( 'accent_color', '#2EA3F2' );
+			$defaults['et_pb_gallery-zoom_icon_color']              = et_get_option( 'accent_color', '#2ea3f2' );
+			$defaults['et_pb_portfolio-zoom_icon_color']            = et_get_option( 'accent_color', '#2ea3f2' );
+			$defaults['et_pb_filterable_portfolio-zoom_icon_color'] = et_get_option( 'accent_color', '#2ea3f2' );
 		}
 
 		// reformat defaults array and add actual values to it

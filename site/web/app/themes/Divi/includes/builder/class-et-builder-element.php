@@ -2983,7 +2983,8 @@ class ET_Builder_Element {
 					$current_media_query = false === strpos( $mobile_option, 'phone' ) ? 'max_width_980' : 'max_width_767';
 					$main_option_name = str_replace( array( '_tablet', '_phone' ), '', $mobile_option );
 					$css_property = str_replace( '_', '-', $main_option_name );
-					$important = in_array( $css_property, $important_options ) || $use_global_important ? ' !important' : '';
+					$css_option_name = 'font-size' === $css_property ? 'size' : $css_property;
+					$important = in_array( $css_option_name, $important_options ) || $use_global_important ? ' !important' : '';
 
 					// Allow specific selector tablet and mobile, simply add _tablet or _phone suffix
 					if ( isset( $option_settings['css'][ $mobile_option ] ) && "" !== $option_settings['css'][ $mobile_option ] ) {
@@ -3055,7 +3056,7 @@ class ET_Builder_Element {
 
 		$style = '';
 		$settings = $this->advanced_options['background'];
-		$important = isset( $settings['css']['use_important'] ) && $settings['css']['use_important'] ? ' !important' : '';
+		$important = isset( $settings['css']['important'] ) && $settings['css']['important'] ? ' !important' : '';
 
 		if ( $this->advanced_options['background']['use_background_color'] ) {
 			$background_color = $this->shortcode_atts['background_color'];
@@ -3292,6 +3293,8 @@ class ET_Builder_Element {
 					$button_bg_color .= ' !important';
 				}
 
+				$main_element_styles_padding_important = 'no' === et_builder_option( 'all_buttons_icon' ) && 'off' !== $button_use_icon;
+
 				$main_element_styles = sprintf(
 					'%1$s
 					%2$s
@@ -3311,9 +3314,10 @@ class ET_Builder_Element {
 					'' !== $button_text_size && 'px' !== $button_text_size ? sprintf( 'font-size:%1$s;', et_builder_process_range_value( $button_text_size ) ) : '',
 					'' !== $button_font ? et_builder_set_element_font( $button_font, true ) : '',
 					'off' === $button_on_hover ?
-						sprintf( 'padding-left:%1$s; padding-right: %2$s;',
+						sprintf( 'padding-left:%1$s%3$s; padding-right: %2$s%3$s;',
 							'left' === $button_icon_placement ? '2em' : '0.7em',
-							'left' === $button_icon_placement ? '0.7em' : '2em'
+							'left' === $button_icon_placement ? '0.7em' : '2em',
+							$main_element_styles_padding_important ? ' !important' : ''
 						)
 						: ''
 				);
@@ -3338,9 +3342,10 @@ class ET_Builder_Element {
 					'off' === $button_on_hover ?
 						''
 						:
-						sprintf( 'padding-left:%1$s; padding-right: %2$s;',
+						sprintf( 'padding-left:%1$s%3$s; padding-right: %2$s%3$s;',
 							'left' === $button_icon_placement ? '2em' : '0.7em',
-							'left' === $button_icon_placement ? '0.7em' : '2em'
+							'left' === $button_icon_placement ? '0.7em' : '2em',
+							$main_element_styles_padding_important ? ' !important' : ''
 						)
 				);
 

@@ -2944,7 +2944,10 @@
 					var $slide_section = $(this).parent( '.et_pb_section' ),
 						$slide = $(this).find( '.et_pb_slide' ),
 						$slide_container = $slide.find( '.et_pb_container' ),
-						max_height = 0;
+						max_height = 0,
+						image_margin = 0,
+						need_image_margin_top = $(this).hasClass( 'et_pb_post_slider_image_top' ),
+						need_image_margin_bottom = $(this).hasClass( 'et_pb_post_slider_image_bottom' );
 
 					// If this is appears at the first section benath transparent nav, skip it
 					// leave it to et_fix_page_container_position()
@@ -2952,17 +2955,36 @@
 						return true;
 					}
 
-					$slide_container.css( 'height', 0 );
+					$slide_container.css( 'min-height', 0 );
+
+					// make slides visible to calculate the height correctly
+					$slide.addClass( 'et_pb_temp_slide' );
 
 					$slide.each( function() {
 						var $this_el = $(this),
-							height = $this_el.innerHeight();
+							height = $this_el.innerHeight(),
+							$slide_image = $this_el.find( '.et_pb_slide_image' );
 
-						if ( max_height < height )
+						if ( need_image_margin_top || need_image_margin_bottom ) {
+							if ( $slide_image.length ) {
+								// get the margin from slides with image
+								image_margin = need_image_margin_top ? parseFloat( $slide_image.css( 'margin-top' ) ) : parseFloat( $slide_image.css( 'margin-bottom' ) );
+								image_margin += 10;
+							} else {
+								// add class to slides without image to adjust their height accordingly
+								$this_el.find( '.et_pb_container' ).addClass( 'et_pb_no_image' );
+							}
+						}
+
+						if ( max_height < height ) {
 							max_height = height;
+						}
 					} );
 
-					$slide_container.css( 'height', max_height );
+					$slide_container.css( 'min-height', max_height + image_margin );
+
+					// remove temp class after getting the slider height
+					$slide.removeClass( 'et_pb_temp_slide' );
 				} );
 			}
 
@@ -3805,20 +3827,25 @@
 				});
 			}
 
+			window.et_pb_comments_init = function( $comments_module ) {
+				var $comments_module_button = $comments_module.find( '.comment-reply-link, .submit' );
+
+				if ( $comments_module_button.length ) {
+					$comments_module_button.addClass( 'et_pb_button' );
+
+					if ( typeof $comments_module.attr( 'data-icon' ) !== 'undefined' && $comments_module.attr( 'data-icon' ) !== '' ) {
+						$comments_module_button.attr( 'data-icon', $comments_module.attr( 'data-icon' ) );
+						$comments_module_button.addClass( 'et_pb_custom_button_icon' );
+					}
+				}
+			};
+
 			// apply required classes for the Reply buttons in Comments Module
 			if ( $( '.et_pb_comments_module' ).length ) {
 				$( '.et_pb_comments_module' ).each( function() {
-					var $comments_module = $( this ),
-						$comments_module_button = $comments_module.find( '.comment-reply-link' );
+					var $comments_module = $( this );
 
-					if ( $comments_module_button.length ) {
-						$comments_module_button.addClass( 'et_pb_button' );
-
-						if ( typeof $comments_module.data( 'icon' ) !== 'undefined' ) {
-							$comments_module_button.attr( 'data-icon', $comments_module.data( 'icon' ) );
-							$comments_module_button.addClass( 'et_pb_custom_button_icon' );
-						}
-					}
+					et_pb_comments_init( $comments_module );
 				});
 			}
 

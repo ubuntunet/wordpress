@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, when this is updated, you must also update corresponding version in builder.js: `window.et_builder_version`
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.21' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.23' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -6291,13 +6291,12 @@ function et_strip_shortcodes( $content, $truncate_post_based_shortcodes_only = f
 			'et_pb_post_slider',
 			'et_pb_fullwidth_post_slider',
 			'et_pb_blog',
-			'et_pb_portfolio'
 		);
 	}
 
 	foreach ( $strip_content_shortcodes as $shortcode_name ) {
 		$regex = sprintf(
-			'(\[%1$s[^\]]*\][^\[]*\[\/%1$s\])',
+			'(\[%1$s[^\]]*\][^\[]*\[\/%1$s\]|\[%1$s[^\]]*\])',
 			esc_html( $shortcode_name )
 		);
 
