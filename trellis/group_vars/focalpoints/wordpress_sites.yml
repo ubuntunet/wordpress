@@ -6,8 +6,8 @@ wordpress_sites:
   fp.ubuntunet.net:
     site_hosts:
       - canonical: fp.ubuntunet.net
-        redirects:
-         - fp.wacren.net
+        # redirects:
+        #  - fp.wacren.net
     local_path: ../site # path targeting local Bedrock site directory (relative to Ansible root)
     repo: git@github.com:ubuntunet/wordpress.git # replace with your Git repo URL
     repo_subtree_path: site # relative path to your Bedrock/WP directory in your repo
