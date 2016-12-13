@@ -2,7 +2,7 @@
 # List each machine only once per [group], even if it will host multiple sites.
 
 [staging]
-168.253.216.236 ansible_user=ubuntu
+wordpress.ubuntunet.net ansible_user=ubuntu
 
 [web]
-168.253.216.236
+wordpress.ubuntunet.net
