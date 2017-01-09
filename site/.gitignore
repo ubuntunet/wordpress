@@ -1,6 +1,8 @@
 # Application
 web/app/plugins/*
 !web/app/plugins/.gitkeep
+!web/app/plugins/divi-100-article-card
+
 web/app/mu-plugins/*/
 web/app/upgrade
 web/app/uploads/*
