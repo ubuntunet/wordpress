@@ -27,13 +27,14 @@ The following directories need to belong to the user ubuntu for the provisioning
 Run the command
 
 ```
-./deploy.sh staging wordpress.ubuntunet.net
+cd trellis
+./bin/deploy.sh staging wordpress.ubuntunet.net
 ```
 
 (Re)Install free plugins (ToDo - Integrated into the Playbook)
 
 ```
-cd /srv/www/wordpress.ubuntunet.net
+cd /srv/www/wordpress.ubuntunet.net/current
 composer update
 ```
 
@@ -43,6 +44,7 @@ Copy over the commercial plugins from ElegantThemes
 cd /srv/www/wordpress.ubuntunet.net
 cp -pr releases/<last_releasedate>/web/app/plugins/monarch current/web/app/plugins/
 cp -pr releases/<last_releasedate>/web/app/plugins/bloom current/web/app/plugins/
+cp -pr releases/<last_releasedate>/web/app/plugins/divi-100-article-card current/web/app/plugins/
 sudo service nginx restart
 ``
 
