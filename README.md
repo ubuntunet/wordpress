@@ -42,9 +42,9 @@ Copy over the commercial plugins from ElegantThemes
 
 ```
 cd /srv/www/wordpress.ubuntunet.net/current
-cp -pr releases/<last_releasedate>/web/app/plugins/monarch web/app/plugins/
-cp -pr releases/<last_releasedate>/web/app/plugins/bloom web/app/plugins/
-cp -pr releases/<last_releasedate>/web/app/plugins/divi-100-article-card web/app/plugins/
+cp -pr releases/<last_releasedate>/web/app/plugins/monarch current/web/app/plugins/
+cp -pr releases/<last_releasedate>/web/app/plugins/bloom current/web/app/plugins/
+cp -pr releases/<last_releasedate>/web/app/plugins/divi-100-article-card current/web/app/plugins/
 sudo service nginx restart
 ``
 
