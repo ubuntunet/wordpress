@@ -11,7 +11,7 @@ wordpress_sites:
     local_path: ../site # path targeting local Bedrock site directory (relative to Ansible root)
     repo: git@github.com:ubuntunet/wordpress.git # replace with your Git repo URL
     repo_subtree_path: site # relative path to your Bedrock/WP directory in your repo
-    branch: feature/subtree2
+    branch: feature/Upgrade_to_472
     multisite:
       enabled: false
     ssl:
