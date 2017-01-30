@@ -45,7 +45,8 @@
     "wpackagist-plugin/wp-category-tag-could": "1.7.1",
     "wpackagist-plugin/akismet": "3.2",
     "wpackagist-plugin/email-address-encoder": "1.0.5",
-    "wpackagist-plugin/easy-twitter-feed-widget": "0.6"
+    "wpackagist-plugin/easy-twitter-feed-widget": "0.6",
+    "wpackagist-plugin/polylang": "2.1"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^2.5.1"
