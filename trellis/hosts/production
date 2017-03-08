@@ -2,7 +2,7 @@
 # List each machine only once per [group], even if it will host multiple sites.
 
 [production]
-168.253.216.236 ansible_user=ubuntu
+168.253.216.236
 
 [web]
 168.253.216.236
