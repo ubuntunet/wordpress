@@ -2,7 +2,8 @@
 # List each machine only once per [group], even if it will host multiple sites.
 
 [focalpoints]
-fp.ubuntunet.net ansible_user=ubuntu
+fp.ubuntunet.net
+# fp.ubuntunet.net ansible_user=ubuntu
 
 [web]
 fp.ubuntunet.net
