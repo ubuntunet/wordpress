@@ -22,10 +22,10 @@ ansible-playbook server.yml -e env=<environment>
 Provisioning
 ------------
 
-This playbook gets run as user 'web'. This user doesn't need root privileges.
+This playbook gets run as user 'web'. This user doesn't need root privileges. For the wordpress_sites name, take the value in wordpress_sites.yml
 ```
 cd trellis
-./bin/deploy.sh <environment> <fqdn>
+./bin/deploy.sh <environment> <wordpress_sites name>
 ```
 
 

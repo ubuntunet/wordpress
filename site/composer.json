@@ -38,7 +38,7 @@
     "vlucas/phpdotenv": "^2.0.1",
     "johnpbloch/wordpress": "4.8.1",
     "oscarotero/env": "^1.1.0",
-    "wpackagist-plugin/password-bcrypt": "1.0.3"
+    "wpackagist-plugin/password-bcrypt": "1.0.3",
     "wpackagist-plugin/tablepress": "1.8",
     "wpackagist-plugin/document-gallery": "4.4.2",
     "wpackagist-plugin/quick-pagepost-redirect-plugin": "5.1.8",
