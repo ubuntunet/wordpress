@@ -33,6 +33,7 @@ cd trellis
 
 ```
 cd /srv/www/<fqdn>/current
+sudo su web
 composer update
 ```
 
