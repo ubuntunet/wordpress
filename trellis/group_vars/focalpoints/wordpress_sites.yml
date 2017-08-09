@@ -3,11 +3,11 @@
 # Define accompanying passwords/secrets in group_vars/production/vault.yml
 
 wordpress_sites:
-  fp.ubuntunet.net:
+  focalpoints.africa:
     site_hosts:
-      - canonical: fp.ubuntunet.net
+      - canonical: fp.wacren.net
         redirects:
-         - fp.wacren.net
+         - fp.ubuntunet.net
     local_path: ../site # path targeting local Bedrock site directory (relative to Ansible root)
     repo: git@github.com:ubuntunet/wordpress.git # replace with your Git repo URL
     repo_subtree_path: site # relative path to your Bedrock/WP directory in your repo

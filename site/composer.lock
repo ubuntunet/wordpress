@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ad6f493b8307cd0b55e1b5a5d14fc108",
+    "hash": "4fb47ce5ed88f3e6d8feba07b6dd083c",
     "packages": [
         {
             "name": "composer/installers",
-            "version": "v1.0.25",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/installers.git",
-                "reference": "36e5b5843203d7f1cf6ffb0305a97e014387bd8e"
+                "reference": "d78064c68299743e0161004f2de3a0204e33b804"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/36e5b5843203d7f1cf6ffb0305a97e014387bd8e",
-                "reference": "36e5b5843203d7f1cf6ffb0305a97e014387bd8e",
+                "url": "https://api.github.com/repos/composer/installers/zipball/d78064c68299743e0161004f2de3a0204e33b804",
+                "reference": "d78064c68299743e0161004f2de3a0204e33b804",
                 "shasum": ""
             },
             "require": {
@@ -64,21 +64,26 @@
                 "MODX Evo",
                 "Mautic",
                 "OXID",
+                "Plentymarkets",
+                "RadPHP",
                 "SMF",
                 "Thelia",
                 "WolfCMS",
                 "agl",
                 "aimeos",
                 "annotatecms",
+                "attogram",
                 "bitrix",
                 "cakephp",
                 "chef",
+                "cockpit",
                 "codeigniter",
                 "concrete5",
                 "croogo",
                 "dokuwiki",
                 "drupal",
                 "elgg",
+                "expressionengine",
                 "fuelphp",
                 "grav",
                 "installer",
@@ -95,33 +100,73 @@
                 "piwik",
                 "ppi",
                 "puppet",
+                "reindex",
                 "roundcube",
                 "shopware",
                 "silverstripe",
                 "symfony",
                 "typo3",
                 "wordpress",
+                "yawik",
                 "zend",
                 "zikula"
             ],
-            "time": "2016-04-13 19:46:30"
+            "time": "2016-08-13 20:53:52"
         },
         {
             "name": "johnpbloch/wordpress",
-            "version": "4.7.3",
+            "version": "4.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnpbloch/wordpress.git",
-                "reference": "eef7c0520b1e7187cd2cd7540dc997c4c3b0340a"
+                "reference": "75bbc8dade6d66b66c7184656df7b3d545d31baa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnpbloch/wordpress/zipball/eef7c0520b1e7187cd2cd7540dc997c4c3b0340a",
-                "reference": "eef7c0520b1e7187cd2cd7540dc997c4c3b0340a",
+                "url": "https://api.github.com/repos/johnpbloch/wordpress/zipball/75bbc8dade6d66b66c7184656df7b3d545d31baa",
+                "reference": "75bbc8dade6d66b66c7184656df7b3d545d31baa",
                 "shasum": ""
             },
             "require": {
-                "johnpbloch/wordpress-core-installer": "~0.2",
+                "johnpbloch/wordpress-core": "4.8.1",
+                "johnpbloch/wordpress-core-installer": "^1.0",
+                "php": ">=5.3.2"
+            },
+            "type": "package",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "WordPress Community",
+                    "homepage": "http://wordpress.org/about/"
+                }
+            ],
+            "description": "WordPress is web software you can use to create a beautiful website or blog.",
+            "homepage": "http://wordpress.org/",
+            "keywords": [
+                "blog",
+                "cms",
+                "wordpress"
+            ],
+            "time": "2017-08-02 21:47:41"
+        },
+        {
+            "name": "johnpbloch/wordpress-core",
+            "version": "4.8.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/johnpbloch/wordpress-core.git",
+                "reference": "eee7b6128469d31803da3a07aaac9c442f81758e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/johnpbloch/wordpress-core/zipball/eee7b6128469d31803da3a07aaac9c442f81758e",
+                "reference": "eee7b6128469d31803da3a07aaac9c442f81758e",
+                "shasum": ""
+            },
+            "require": {
                 "php": ">=5.3.2"
             },
             "type": "wordpress-core",
@@ -139,22 +184,23 @@
             "homepage": "http://wordpress.org/",
             "keywords": [
                 "blog",
-                "cms"
+                "cms",
+                "wordpress"
             ],
-            "time": "2017-03-06 16:01:58"
+            "time": "2017-08-02 21:47:36"
         },
         {
             "name": "johnpbloch/wordpress-core-installer",
-            "version": "0.2.1",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnpbloch/wordpress-core-installer.git",
-                "reference": "a04c2c383ef13aae077f36799ed2eafdebd618d2"
+                "reference": "e9e767f2d9f994f358c34b41def2c410ad8717f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnpbloch/wordpress-core-installer/zipball/a04c2c383ef13aae077f36799ed2eafdebd618d2",
-                "reference": "a04c2c383ef13aae077f36799ed2eafdebd618d2",
+                "url": "https://api.github.com/repos/johnpbloch/wordpress-core-installer/zipball/e9e767f2d9f994f358c34b41def2c410ad8717f2",
+                "reference": "e9e767f2d9f994f358c34b41def2c410ad8717f2",
                 "shasum": ""
             },
             "require": {
@@ -164,7 +210,8 @@
                 "composer/installers": "<1.0.6"
             },
             "require-dev": {
-                "composer/composer": "1.0.*@dev"
+                "composer/composer": "^1.0",
+                "phpunit/phpunit": ">=4.8.35"
             },
             "type": "composer-plugin",
             "extra": {
@@ -189,20 +236,20 @@
             "keywords": [
                 "wordpress"
             ],
-            "time": "2015-06-11 15:15:30"
+            "time": "2017-05-31 18:42:33"
         },
         {
             "name": "oscarotero/env",
-            "version": "v1.0.2",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/oscarotero/env.git",
-                "reference": "0819fd764ca19ab880b8d9ed7a95ae4910f98f20"
+                "reference": "0f676e41d758fa984806c32e27f0cf7afa63d8db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/oscarotero/env/zipball/0819fd764ca19ab880b8d9ed7a95ae4910f98f20",
-                "reference": "0819fd764ca19ab880b8d9ed7a95ae4910f98f20",
+                "url": "https://api.github.com/repos/oscarotero/env/zipball/0f676e41d758fa984806c32e27f0cf7afa63d8db",
+                "reference": "0f676e41d758fa984806c32e27f0cf7afa63d8db",
                 "shasum": ""
             },
             "require": {
@@ -231,7 +278,7 @@
             "keywords": [
                 "env"
             ],
-            "time": "2016-05-08 17:14:32"
+            "time": "2017-07-17 20:41:59"
         },
         {
             "name": "roots/wp-password-bcrypt",
@@ -344,16 +391,16 @@
     "packages-dev": [
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "2.8.1",
+            "version": "2.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "d7cf0d894e8aa4c73712ee4a331cc1eaa37cdc7d"
+                "reference": "dcbed1074f8244661eecddfc2a675430d8d33f62"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/d7cf0d894e8aa4c73712ee4a331cc1eaa37cdc7d",
-                "reference": "d7cf0d894e8aa4c73712ee4a331cc1eaa37cdc7d",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/dcbed1074f8244661eecddfc2a675430d8d33f62",
+                "reference": "dcbed1074f8244661eecddfc2a675430d8d33f62",
                 "shasum": ""
             },
             "require": {
@@ -418,7 +465,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2017-03-01 22:17:45"
+            "time": "2017-05-22 02:43:20"
         }
     ],
     "aliases": [],

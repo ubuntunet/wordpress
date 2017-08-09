@@ -1,8 +1,11 @@
 # Add each host to the [staging] group and to a "type" group such as [web] or [db].
 # List each machine only once per [group], even if it will host multiple sites.
+196.223.217.76
 
 [ubuntunet_net]
-wordpress.ubuntunet.net
+196.223.217.76
+#wordpress.ubuntunet.net
 
 [web]
-wordpress.ubuntunet.net
+196.223.217.76
+#wordpress.ubuntunet.net

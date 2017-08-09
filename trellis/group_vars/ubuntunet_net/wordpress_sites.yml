@@ -3,7 +3,7 @@
 # Define accompanying passwords/secrets in group_vars/staging/vault.yml
 
 wordpress_sites:
-  wordpress.ubuntunet.net:
+  ubuntunet.net:
     site_hosts:
       - canonical: wordpress.ubuntunet.net
         redirects:
