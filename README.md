@@ -13,11 +13,22 @@ cd trellis
 ansible-galaxy install -r requirements.yml
 ```
 
-This playbook gets run as the user 'ubuntu'. It doesn't harm to run it before every upgrade
+This playbook gets run as the user 'ubuntu'. There is usually no need to run this, but it doesn't seem to do any harm to run it before an upgrade
 ```
 cd trellis
 ansible-playbook server.yml -e env=<environment>
 ```
+
+
+Upgrade with Subtree
+--------------------
+
+```
+git subtree pull --prefix=trellis trellis master --squash
+git subtree pull --prefix=site bedrock master --squash
+```
+
+
 
 Provisioning
 ------------
@@ -37,6 +48,12 @@ sudo su web
 composer update
 ```
 
+
+Divi Theme/Plugins
+------------------
+
+The Divi theme can be installed/updated thru the web interface.
+
 Copy over the commercial plugins from ElegantThemes (If needed)
 
 ```
@@ -47,13 +64,6 @@ sudo service nginx restart
 ``
 
 
-Upgrade with Subtree
---------------------
-
-```
-git subtree pull --prefix=trellis trellis master --squash
-git subtree pull --prefix=site bedrock master --squash
-```
 
 
 Ansible Vault
