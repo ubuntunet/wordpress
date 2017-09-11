@@ -5,7 +5,7 @@
 wordpress_sites:
   ubuntunet.net:
     site_hosts:
-      - canonical: wordpress.ubuntunet.net
+      - canonical: ubuntunet.net
         redirects:
           - ubuntunet.org
     local_path: ../site # path targeting local Bedrock site directory (relative to Ansible root)
