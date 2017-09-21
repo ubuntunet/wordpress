@@ -46,6 +46,7 @@
     "wpackagist-plugin/timeline-express": "1.5.2",
     "wpackagist-plugin/featured-images-for-rss-feeds": "1.4.7",
     "wpackagist-plugin/better-font-awesome": "1.7.1",
+    "wpackagist-plugin/pc-robotstxt": "1.9",
     "wpackagist-plugin/google-sitemap-generator": "4.0.9"
   },
   "require-dev": {

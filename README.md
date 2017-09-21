@@ -57,8 +57,8 @@ The Divi theme can be installed/updated thru the web interface.
 Copy over the commercial plugins from ElegantThemes (If needed)
 
 ```
-cd /srv/www/ubuntunet.net/current
-cp -pr ../releases/<last_releasedate>/web/app/plugins/{monarch,bloom,Divi-Blog-Extras} web/app/plugins/
+cd /srv/www/<fqdn>/current
+cp -pr ../<last_releasedate>/web/app/plugins/{monarch,bloom,Divi-Blog-Extras} web/app/plugins/
 sudo service nginx restart
 ``
 
