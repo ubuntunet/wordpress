@@ -7,9 +7,9 @@ import sys
 from __main__ import cli
 from ansible.module_utils.six import iteritems
 from ansible.errors import AnsibleError
-from ansible.parsing.dataloader import DataLoader
 from ansible.parsing.yaml.objects import AnsibleMapping, AnsibleSequence, AnsibleUnicode
 from ansible.playbook.play_context import PlayContext
+from ansible.playbook.task import Task
 from ansible.plugins.callback import CallbackBase
 from ansible.template import Templar
 
@@ -21,7 +21,6 @@ class CallbackModule(CallbackBase):
     CALLBACK_NAME = 'vars'
 
     def __init__(self):
-        self.loader = DataLoader()
         self._options = cli.options if cli else None
 
     def raw_triage(self, key_string, item, patterns):
@@ -42,7 +41,7 @@ class CallbackModule(CallbackBase):
         if 'raw_vars' not in hostvars:
             return
 
-        raw_vars = Templar(variables=hostvars, loader=self.loader).template(hostvars['raw_vars'])
+        raw_vars = Templar(variables=hostvars, loader=play._loader).template(hostvars['raw_vars'])
         if not isinstance(raw_vars, list):
             raise AnsibleError('The `raw_vars` variable must be defined as a list.')
 
@@ -95,7 +94,8 @@ class CallbackModule(CallbackBase):
             env_group.set_priority(20)
 
         for host in play.get_variable_manager()._inventory.list_hosts(play.hosts[0]):
-            hostvars = play.get_variable_manager().get_vars(play=play, host=host)
+            # it should be ok to remove dummy Task() once minimum required Ansible >= 2.4.2
+            hostvars = play.get_variable_manager().get_vars(play=play, host=host, task=Task())
             self.raw_vars(play, host, hostvars)
             host.vars['ssh_args_default'] = PlayContext(play=play, options=self._options)._ssh_args.default
             host.vars['cli_options'] = self.cli_options()
