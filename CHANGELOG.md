@@ -1,4 +1,10 @@
 ### HEAD
+* Switch from `.dev` to `.test` ([#923](https://github.com/roots/trellis/pull/923))
+
+### 1.0.0-rc.2: November 13th, 2017
+* Update wp-cli to 1.4.1 ([#918](https://github.com/roots/trellis/pull/918))
+* Disallow duplicate site keys within a host's `wordpress_sites` ([#910](https://github.com/roots/trellis/pull/910))
+* Fix `raw_vars` functionality for Ansible 2.4.1 ([#915](https://github.com/roots/trellis/pull/915))
 * Enable Virtualbox ioapic option ([#913](https://github.com/roots/trellis/pull/913))
 * Dynamically increase `ansible_group_priority` for selected env ([#909](https://github.com/roots/trellis/pull/909))
 * Bump Ansible `version_tested_max` to 2.4.1.0 ([#911](https://github.com/roots/trellis/pull/911))
