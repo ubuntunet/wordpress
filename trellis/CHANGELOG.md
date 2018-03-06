@@ -1,4 +1,13 @@
 ### HEAD
+* [BREAKING] Disable memcached UDP support by default ([#955](https://github.com/roots/trellis/pull/955))
+* Git: Ignore `vagrant.local.yml`([#953](https://github.com/roots/trellis/pull/953))
+* Update to PHP 7.2 ([#929](https://github.com/roots/trellis/pull/929))
+* Fix `failed_when` in `template_root` check with wp-cli 1.5.0 ([#948](https://github.com/roots/trellis/pull/948))
+* Bump Ansible `version_tested_max` to 2.4.3.0 ([#945](https://github.com/roots/trellis/pull/945))
+* Update wp-cli to 1.5.0 ([#944](https://github.com/roots/trellis/pull/944))
+* Update `vagrant_box_version` to `>= 201801.02.0` ([#939](https://github.com/roots/trellis/pull/939))
+* Bump Ansible `version_tested_max` to 2.4.2.0 ([#932](https://github.com/roots/trellis/pull/932))
+* Add MariaDB 10.2 PPA ([#926](https://github.com/roots/trellis/pull/926))
 * Switch from `.dev` to `.test` ([#923](https://github.com/roots/trellis/pull/923))
 
 ### 1.0.0-rc.2: November 13th, 2017
