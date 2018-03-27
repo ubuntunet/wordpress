@@ -6,12 +6,13 @@ Server Setup
 
 See also: https://roots.io/trellis/docs/remote-server-setup/
 
-Only do this when starting afresh or when there has been some changes to the underlying software and/or OS
+??Only do this when starting afresh or when there has been some changes to the underlying software and/or OS??
 
 ```
 cd trellis
 ansible-galaxy install -r requirements.yml
 ```
+
 
 This playbook gets run as the user 'ubuntu'. There is usually no need to run this, but it doesn't seem to do any harm to run it before an upgrade
 ```
